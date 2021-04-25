@@ -1,20 +1,7 @@
 
 import pathlib
 import string
-
-
-def uniq_filename(filename):
-    """ mine """
-    filename = pathlib.Path(filename)
-    g = (x for x in string.ascii_lowercase)
-    suffix = ''.join(filename.suffixes)
-    stem = filename.stem.split('.')[0]
-    if filename.exists():
-        while True:
-            fn = filename.with_name(f"{stem}{next(g)}").with_suffix(suffix)
-            if not fn.is_file():
-                return fn
-    return filename
+from functools import partial
 
 
 def uniq_fn(filename, letters: bool = False):
@@ -29,6 +16,22 @@ def uniq_fn(filename, letters: bool = False):
             fn = filename.with_name(f"{stem}_{next(g)}").with_suffix(suffix) \
             if letters else \
             filename.with_name(f"{stem}_{next(n):03d}").with_suffix(suffix)
+            if not fn.is_file():
+                return fn
+    return filename
+
+uniq_filename = partial(uniq_fn, letters=True)
+
+
+def uniq_filename0(filename):
+    """ mine """
+    filename = pathlib.Path(filename)
+    g = (x for x in string.ascii_lowercase)
+    suffix = ''.join(filename.suffixes)
+    stem = filename.stem.split('.')[0]
+    if filename.exists():
+        while True:
+            fn = filename.with_name(f"{stem}{next(g)}").with_suffix(suffix)
             if not fn.is_file():
                 return fn
     return filename
@@ -57,4 +60,5 @@ def unique_path(directory, name_pattern):
         path = directory / name_pattern.format(counter)
         if not path.exists():
             return path
+
 
